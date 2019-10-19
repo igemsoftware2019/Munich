@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -5,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class MainWindow {
@@ -13,11 +15,40 @@ public class MainWindow {
     }
 
     public static JFrame createMainWindow(){
+        MainWindow window = new MainWindow();
         JFrame mainWindow = new JFrame();
-        mainWindow.setTitle("Silent Mutation Calculator");
+        mainWindow.setTitle("Silentcode");
         mainWindow.setSize(new Dimension(800, 800));
-        mainWindow.setLayout(new GridBagLayout());
+        JPanel content = new JPanel();
+        content.setLayout(new GridBagLayout());
 
+
+        JLabel inLabel = new JLabel("Please enter your sequence here (in frame):");
+
+        JTextArea inField = new JTextArea("ATGTAA");
+        inField.setLineWrap(true);
+        JScrollPane scrollPaneINPUT = new JScrollPane (inField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JPanel inSect = new JPanel();
+        inSect.setLayout(new BorderLayout());
+        inSect.setBackground(new Color(140, 196, 242));
+        inSect.setOpaque(true);
+        inSect.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        inSect.add(inLabel, BorderLayout.NORTH);
+        inSect.add(scrollPaneINPUT, BorderLayout.CENTER);
+
+
+        JLabel outLabel = new JLabel("Results (You might need to scroll down a bit when finished):");
+
+        JEditorPane outArea = new JEditorPane();
+        outArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane (outArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JPanel outSect = new JPanel();
+        outSect.setLayout(new BorderLayout());
+        outSect.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        outSect.add(outLabel, BorderLayout.NORTH);
+        outSect.add(scrollPane, BorderLayout.CENTER);
 
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
@@ -27,41 +58,31 @@ public class MainWindow {
         c.gridheight = 1;
 
         c.gridx = 0;
-        c.gridy = 1;
-
-        JTextArea inField = new JTextArea("ATGTAA");
-        inField.setLineWrap(true);
-        JScrollPane scrollPaneINPUT = new JScrollPane (inField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        mainWindow.add(scrollPaneINPUT, c);
-
+        c.gridy = 2;
+        content.add(inSect, c);
 
         c.gridy = 3;
-        JEditorPane outArea = new JEditorPane();
-        outArea.setEditable(false);
-        //outArea.setContentType("text/plain");
-        JScrollPane scrollPane = new JScrollPane (outArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        /*scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-            }
-        });*/
-
-
-        mainWindow.add(scrollPane, c);
+        content.add(outSect, c);
 
         c.weighty = 0.1;
         c.gridy = 0;
-        JLabel inLabel = new JLabel("Please enter your sequence here:");
-        mainWindow.add(inLabel, c);
+        //JLabel img = new JLabel(new ImageIcon("./sup/SilentcodeLogo.png"));
+        try {
+            JLabel img = new JLabel(new ImageIcon(ImageIO.read(window.getClass().getResource("SilentcodeLogo.png"))));
+            content.add(img, c);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
 
-        c.gridy = 2;
-        JLabel outLabel = new JLabel("Results (You might need to scroll down a bit when finished):");
-        mainWindow.add(outLabel, c);
+        c.gridy = 1;
+        JLabel subTitle = new JLabel("Calculate the silent mutation encoding potential of your sequence", SwingConstants.CENTER);
+        content.add(subTitle, c);
 
+        c.insets = new Insets(2,10,2,10);
         c.gridwidth = 1;
         JCheckBox vocalcheck = new JCheckBox("vocal", true);
         c.gridy = 4;
-        mainWindow.add(vocalcheck, c);
+        content.add(vocalcheck, c);
 
         JButton trigger = new JButton("Launch");
         trigger.addActionListener(new ActionListener(){
@@ -78,8 +99,9 @@ public class MainWindow {
         });
         trigger.setBackground(Color.RED);
         c.gridx = 1;
-        mainWindow.add(trigger, c);
+        content.add(trigger, c);
 
+        mainWindow.add(content);
         mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWindow.setLocationRelativeTo(null);
         mainWindow.setVisible(true);
